@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>game kotak html</title>
+	<style>
+		#canvas1{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			width: 600px;
+			height: 400px;
+			border :2px solid black;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="canvas1">browse anda tidak mendukung</canvas>
+   <script src="Bird.js"></script>
+   <script src="particle.js"></script>
+   <script src="obstacle.js"></script>
+	<script>
+
+		// let jump = new Audio();
+		// jump.src = 'musik/jump.m4a';
+
+		let nabrak = new Audio();
+		nabrak.src = 'musik/jatuh.m4a';
+
+		let point = new Audio();
+		point.src = 'musik/sfx_point.ogg';
+
+		let musik = new Audio();
+		musik.src = 'Bg_sound.mp3';
+
+
+
+		const canvas = document.getElementById('canvas1');
+		const ctx = canvas.getContext('2d');
+
+		canvas.width = 600;
+		canvas.height = 400;
+
+		let tekanSpasi = false;
+		let angle = 0;
+		let hue = 0;
+		let frame = 0;
+		let score = 0;
+		let gameSpeed = 2;
+
+
+        const background = new Image();
+        background.src= '2_0.png';
+
+        const BG = {
+        	x1:0,
+        	x2:canvas.width,
+        	y:0,
+        	width:canvas.width,
+        	height:canvas.height
+        }
+
+        function handleBackground(){
+            
+        	if(BG.x1 <= -BG.width+gameSpeed)BG.x1 = BG.width;
+        else BG.x1 -= gameSpeed;
+        if(BG.x2 <= -BG.width+gameSpeed)BG.x2= BG.width;
+        else(BG.x2 -=gameSpeed);
+        ctx.drawImage(background,BG.x1,BG.y,BG.width,BG.height);
+        ctx.drawImage(background,BG.x2,BG.y,BG.width,BG.height);
+        
+    }
+        
+        
+		function animasi(){
+           
+			ctx.clearRect(0,0,canvas.width,canvas.height);
+			handleBackground();
+			handleObstacles();
+			burung.update();
+			burung.draw();
+			handlerParticle();
+			handleCollections();
+			ctx.font = '90px Georgia';
+        		ctx.fillStyle = "red";
+        	ctx.strokeText(score,450,70);
+        	ctx.fillText(score,450,70);
+			if(handleCollections())return;
+
+			requestAnimationFrame(animasi);
+			angle+= 0.12;
+			hue++;
+			frame++;
+		}
+      
+        animasi();
+
+      ;
+
+        window.addEventListener('keydown',function(e){
+        	console.log(e.code);
+
+        	if(e.code === 'Space'){tekanSpasi = true;
+        	   musik.play();
+        	}
+        });
+
+        window.addEventListener('keyup',function(e){
+            
+            if(e.code === 'Space')tekanSpasi = false;
+            this.frameX = 0;
+            // jump.play();
+        });
+         const gameOver = new Image();
+         gameOver.src = 'gameOver.png';
+
+         const UI = new Image();
+         UI.src = "ui.png";
+
+
+        const ledakan = new Image();
+        ledakan.src ='img_18.png';
+         function handleCollections(){
+        
+        for(let i=0; i< obstacleArray.length; i++){
+        	if(burung.x < obstacleArray[i].x + obstacleArray[i].width && 
+        		burung.x + burung.width > obstacleArray[i].x && ((burung.y < 0 + obstacleArray[i].top && burung.y + burung.height> 0)||(burung.y > canvas.height - obstacleArray[i].bottom && burung.y + burung.height < canvas.height))){
+        		// KALAU TABRAKAN TERDETEKSI 
+        	    nabrak.play();
+        		ctx.drawImage(ledakan,burung.x,burung.y-9,50,50);
+        		ctx.drawImage(UI,canvas.width/3-20,50);
+        		ctx.drawImage(gameOver,100,120);
+        		ctx.font = "25px Georgia";
+        		ctx.fillStyle = "black";
+        		ctx.fillText("Tolol Banget Lu : "+score,canvas.width/2-90,canvas.height/2+30);
+        		stop(musik);
+        		
+        	return true;
+
+        }
+        	}
+
+        }
+
+
+</script>
+
+
+
+</body>
+</html>
